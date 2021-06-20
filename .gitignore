@@ -1,0 +1,4 @@
+*.json
+.idea/
+.vscode/
+1password-linux-to-bitwarden
