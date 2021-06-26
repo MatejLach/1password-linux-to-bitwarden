@@ -23,8 +23,10 @@ type Entry struct {
 				Title string `json:"title"`
 				Id    string `json:"id"`
 				Value struct {
+					Email     string      `json:"email,omitempty"`
 					String    string      `json:"string,omitempty"`
 					Concealed string      `json:"concealed,omitempty"`
+					Url       string      `json:"url,omitempty"`
 					Menu      string      `json:"menu,omitempty"`
 					Date      interface{} `json:"date"`
 					Address   struct {
@@ -35,7 +37,6 @@ type Entry struct {
 						State   string `json:"state"`
 					} `json:"address,omitempty"`
 					Phone string `json:"phone,omitempty"`
-					Url   string `json:"url,omitempty"`
 				} `json:"value"`
 				IndexAtSource int  `json:"indexAtSource"`
 				Guarded       bool `json:"guarded"`

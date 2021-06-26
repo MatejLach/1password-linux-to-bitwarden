@@ -32,13 +32,27 @@ func Encode1PasswordExportAsBitWardenImport(onePassExport decoder.OnePassword) (
 					entryURIS = append(entryURIS, URIEntry{URI: uri.Url})
 				}
 
-				for _, loginField := range entry.Item.Details.LoginFields {
-					if loginField.Designation == "username" && loginField.Value != "" {
-						entryType = 1
-						entryUsername = loginField.Value
-					} else if loginField.Designation == "password" && loginField.Value != "" {
-						entryType = 1
-						entryPassword = loginField.Value
+				if len(entry.Item.Details.LoginFields) > 0 {
+					for _, loginField := range entry.Item.Details.LoginFields {
+						if loginField.Designation == "username" && loginField.Value != "" {
+							entryType = 1
+							entryUsername = loginField.Value
+						} else if loginField.Designation == "password" && loginField.Value != "" {
+							entryType = 1
+							entryPassword = loginField.Value
+						}
+					}
+				} else if len(entry.Item.Details.Sections) > 0 {
+					for _, section := range entry.Item.Details.Sections {
+						for _, loginField := range section.Fields {
+							if loginField.Title == "email" && loginField.Value.Email != "" {
+								entryType = 1
+								entryUsername = loginField.Value.Email
+							}
+						}
+					}
+					if entry.Item.Details.Password != "" {
+						entryPassword = entry.Item.Details.Password
 					}
 				}
 
