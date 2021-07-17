@@ -54,9 +54,12 @@ func Encode1PasswordExportAsBitWardenImport(onePassExport decoder.OnePassword) (
 					if entry.Item.Details.Password != "" {
 						entryPassword = entry.Item.Details.Password
 					}
+				} else if entry.Item.Details.Password != "" {
+					entryType = 1
+					entryPassword = entry.Item.Details.Password
 				}
 
-				if entryUsername == "" || entryPassword == "" {
+				if entryUsername == "" && entryPassword == "" {
 					continue
 				}
 
