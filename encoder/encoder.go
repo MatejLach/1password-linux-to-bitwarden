@@ -34,10 +34,10 @@ func Encode1PasswordExportAsBitWardenImport(onePassExport decoder.OnePassword) (
 
 				if len(entry.Item.Details.LoginFields) > 0 {
 					for _, loginField := range entry.Item.Details.LoginFields {
-						if loginField.Designation == "username" && loginField.Value != "" {
+						if (loginField.FieldType == "T" || loginField.Designation == "username") && loginField.Value != "" {
 							entryType = 1
 							entryUsername = loginField.Value
-						} else if loginField.Designation == "password" && loginField.Value != "" {
+						} else if (loginField.FieldType == "P" || loginField.Designation == "password") && loginField.Value != "" {
 							entryType = 1
 							entryPassword = loginField.Value
 						}
@@ -59,21 +59,39 @@ func Encode1PasswordExportAsBitWardenImport(onePassExport decoder.OnePassword) (
 					entryPassword = entry.Item.Details.Password
 				}
 
-				if entryUsername == "" && entryPassword == "" {
+				if entryType == 0 && entry.Item.Details.NotesPlain != "" {
+					entryType = 2
+				}
+
+				if entryUsername == "" && entryPassword == "" && entryType == 0 {
 					continue
 				}
 
-				btwItems = append(btwItems, Entry{
-					ID:       entry.Item.Uuid,
-					FolderID: btwFolder.ID,
-					Type:     entryType,
-					Name:     entry.Item.Overview.Title,
-					Login: LoginEntry{
-						Uris:     entryURIS,
-						Username: entryUsername,
-						Password: entryPassword,
-					},
-				})
+				switch entryType {
+				case 1:
+					btwItems = append(btwItems, Entry{
+						ID:       entry.Item.Uuid,
+						FolderID: btwFolder.ID,
+						Type:     entryType,
+						Name:     entry.Item.Overview.Title,
+						Login: LoginEntry{
+							Uris:     entryURIS,
+							Username: entryUsername,
+							Password: entryPassword,
+						},
+						Notes: entry.Item.Details.NotesPlain,
+					})
+				case 2:
+					btwItems = append(btwItems, Entry{
+						ID:       entry.Item.Uuid,
+						FolderID: btwFolder.ID,
+						Type:     entryType,
+						Name:     entry.Item.Overview.Title,
+						Notes:    entry.Item.Details.NotesPlain,
+					})
+				default:
+					continue
+				}
 			}
 		}
 	}
